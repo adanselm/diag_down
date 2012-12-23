@@ -1,0 +1,49 @@
+# A-->B: text
+# A->B: text
+# A->+B: text
+# B-->-A: text
+# A->A: text
+# A-->A: text
+# A->+A: text
+# A-->-A: text
+grammar SequenceLanguage
+
+  # One message from a source to a destination
+  # containing a text and with a particular
+  # arrow type.
+  rule message
+    arrow_source:arrow_end arrow arrow_destination:arrow_end ':' ' '* label
+    {
+      def dotted?
+        return arrow.dotted?
+      end
+    }
+  end
+
+  rule arrow_end
+#    ((plus:'+'? label) / (minus:'-'? label))
+    sign:('+' / '-')? label
+    {
+      def activate?
+        return ! sign.empty? && sign.text_value == '+'
+      end
+
+      def deactivate?
+        return ! sign.empty? && sign.text_value == '-'
+      end
+    }
+  end
+
+  rule arrow
+    '-' dot:'-'? '>'
+    {
+      def dotted?
+        return ! dot.empty?
+      end
+    }
+  end
+
+  rule label
+    [ A-Za-z0-9]+
+  end
+end
